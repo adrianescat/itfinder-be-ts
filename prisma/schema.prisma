@@ -1,0 +1,96 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                Int                 @id @default(autoincrement())
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+  name              String              @db.VarChar(100)
+  lastname          String              @db.VarChar(100)
+  email             String              @db.VarChar(200)
+  passwordHash      Bytes               @unique
+  activated         Boolean             @default(false)
+  version           Int                 @default(1)
+  offers            Offer[]
+  profile           Profile?
+  roles             UserRoles[]
+  profilesBookmarks ProfilesBookmarks[]
+}
+
+model Offer {
+  id          Int                 @id @default(autoincrement())
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+  userId      Int
+  user        User                @relation(fields: [userId], references: [id])
+  active      Boolean             @default(false)
+  title       String              @db.VarChar(200)
+  description String              @db.Text
+  salary      Json
+  version     Int                 @default(1)
+  applicants  OffersApplicants[]
+}
+
+model Profile {
+  id              Int                 @id @default(autoincrement())
+  userId          Int                 @unique
+  user            User                @relation(fields: [userId], references: [id])
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+  title           String              @db.Text
+  about           String              @db.Text
+  status          String              @db.Text
+  country         String              @db.Text
+  state           String              @db.Text
+  city            String              @db.Text
+  pictureUrl      String              @db.Text
+  websiteUrl      String              @db.Text
+  salary          Json
+  version         Int                 @default(1)
+  usersBookmarks  ProfilesBookmarks[]
+  offers          OffersApplicants[]
+}
+
+model Role {
+  id      Int         @id @default(autoincrement())
+  code    String      @db.Text
+  users   UserRoles[]
+}
+
+model UserRoles {
+  user        User      @relation(fields: [userId], references: [id])
+  userId      Int
+  role        Role      @relation(fields: [roleId], references: [id])
+  roleId      Int
+  assignedAt  DateTime  @default(now())
+  assignedBy  Int
+
+  @@id([userId, roleId])
+}
+
+model ProfilesBookmarks {
+  user      User    @relation(fields: [userId], references: [id])
+  userId    Int
+  profile   Profile @relation(fields: [profileId], references: [id])
+  profileId Int
+
+  @@id([userId, profileId])
+}
+
+model OffersApplicants {
+  offer     Offer   @relation(fields: [offerId], references: [id])
+  offerId   Int
+  profile   Profile @relation(fields: [profileId], references: [id])
+  profileId Int
+
+  @@id([offerId, profileId])
+}
