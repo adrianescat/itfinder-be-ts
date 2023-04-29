@@ -9,9 +9,9 @@
   "main": "./src/index.ts",
   "scripts": {
     "dev": "NODE_ENV=development npm-run-all --parallel start:dev build:watch",
-    "start:dev": "nodemon ./build/index.js --inspect --watch ./build",
+    "start:dev": "nodemon ./build/src/index.js --inspect --watch ./build/src/",
     "build:watch": "NODE_ENV=development tsc -p tsconfig.json --watch",
-    "start": "NODE_ENV=production node ./build/index.js",
+    "start": "NODE_ENV=production node ./build/src/index.js",
     "build": "NODE_ENV=production tsc -p tsconfig.json",
     "lint": "eslint --ext .js,.ts .",
     "prettier:format": "prettier --write \"./**/*.ts\"",
